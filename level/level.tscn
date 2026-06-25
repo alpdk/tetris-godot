@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dj6bna6qc46b"]
+
+[ext_resource type="PackedScene" uid="uid://dh7pvrtohxxrb" path="res://figures/square/square.tscn" id="1_7lnir"]
+
+[node name="Level" type="Node2D" unique_id=282307337]
+
+[node name="Square" parent="." unique_id=1231902372 instance=ExtResource("1_7lnir")]
+position = Vector2(155, 155)

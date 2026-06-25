@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dh7pvrtohxxrb"]
+
+[ext_resource type="PackedScene" uid="uid://2hpnernbo4d3" path="res://block/block.tscn" id="1_3u5m4"]
+
+[node name="Square" type="Node2D" unique_id=1231902372]
+
+[node name="Blocks" type="Node2D" parent="." unique_id=528068787]
+
+[node name="Block1" parent="Blocks" unique_id=71879939 instance=ExtResource("1_3u5m4")]
+number = 1
+
+[node name="Block2" parent="Blocks" unique_id=2112330947 instance=ExtResource("1_3u5m4")]
+position = Vector2(0, -40)
+number = 2
+
+[node name="Block3" parent="Blocks" unique_id=928600212 instance=ExtResource("1_3u5m4")]
+position = Vector2(40, -40)
+number = 3
+
+[node name="Block4" parent="Blocks" unique_id=1446371933 instance=ExtResource("1_3u5m4")]
+position = Vector2(40, 0)
+number = 4
