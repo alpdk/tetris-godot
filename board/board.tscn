@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://b8ti2xssbgu34"]
 
-[ext_resource type="PackedScene" uid="uid://dh7pvrtohxxrb" path="res://figures/square/square.tscn" id="1_5c38k"]
+[ext_resource type="Script" uid="uid://24pq3bxs8r31" path="res://board/src/board.gd" id="1_k4dee"]
 
 [node name="Board" type="Node2D" unique_id=1817256848]
+script = ExtResource("1_k4dee")
+fig_spawn_grid_pos = Vector2(0, -18)
 
-[node name="Line2D" type="Line2D" parent="." unique_id=2089109878]
+[node name="BoardBox" type="Line2D" parent="." unique_id=2089109878]
 texture_repeat = 3
 position = Vector2(0, -440)
 points = PackedVector2Array(0, 0, 220, 0, 220, 440, 0, 440)
@@ -12,5 +14,6 @@ closed = true
 width = 20.0
 joint_mode = 2
 
-[node name="Square" parent="." unique_id=1231902372 instance=ExtResource("1_5c38k")]
-position = Vector2(10, -10)
+[node name="Lines" type="Node2D" parent="." unique_id=1409746379]
+
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]

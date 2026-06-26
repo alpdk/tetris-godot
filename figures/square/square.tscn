@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://dh7pvrtohxxrb"]
 
 [ext_resource type="PackedScene" uid="uid://2hpnernbo4d3" path="res://block/block.tscn" id="1_3u5m4"]
+[ext_resource type="Script" uid="uid://sugr7adat8ja" path="res://figures/square/src/square.gd" id="1_35hso"]
 
 [node name="Square" type="Node2D" unique_id=1231902372]
+script = ExtResource("1_35hso")
 
 [node name="Blocks" type="Node2D" parent="." unique_id=528068787]
 

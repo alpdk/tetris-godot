@@ -5,5 +5,5 @@
 [node name="Level" type="Node2D" unique_id=282307337]
 
 [node name="Board" parent="." unique_id=1817256848 instance=ExtResource("2_5gx2l")]
-position = Vector2(470, 637)
+position = Vector2(509.99997, 590.00006)
 scale = Vector2(1.25, 1.25)
