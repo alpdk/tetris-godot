@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b8ti2xssbgu34"]
+
+[ext_resource type="PackedScene" uid="uid://dh7pvrtohxxrb" path="res://figures/square/square.tscn" id="1_5c38k"]
+
+[node name="Board" type="Node2D" unique_id=1817256848]
+
+[node name="Line2D" type="Line2D" parent="." unique_id=2089109878]
+texture_repeat = 3
+position = Vector2(0, -440)
+points = PackedVector2Array(0, 0, 220, 0, 220, 440, 0, 440)
+closed = true
+width = 20.0
+joint_mode = 2
+
+[node name="Square" parent="." unique_id=1231902372 instance=ExtResource("1_5c38k")]
+position = Vector2(10, -10)
