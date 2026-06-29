@@ -4,12 +4,10 @@
 
 [node name="Board" type="Node2D" unique_id=1817256848]
 script = ExtResource("1_k4dee")
-fig_spawn_grid_pos = Vector2(0, -18)
 
 [node name="BoardBox" type="Line2D" parent="." unique_id=2089109878]
 texture_repeat = 3
-position = Vector2(0, -440)
-points = PackedVector2Array(0, 0, 220, 0, 220, 440, 0, 440)
+points = PackedVector2Array(0, -440, 220, -440, 220, 0, 0, 0)
 closed = true
 width = 20.0
 joint_mode = 2

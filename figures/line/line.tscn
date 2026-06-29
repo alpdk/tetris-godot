@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dy0mns205b22v"]
+
+[ext_resource type="Script" uid="uid://dn252bicmn60q" path="res://figures/line/src/line.gd" id="1_qufqo"]
+[ext_resource type="PackedScene" uid="uid://2hpnernbo4d3" path="res://block/block.tscn" id="2_qufqo"]
+
+[node name="Line" type="Node2D" unique_id=2000558213]
+script = ExtResource("1_qufqo")
+width = 4
+height = 1
+
+[node name="Blocks" type="Node2D" parent="." unique_id=1340661712]
+
+[node name="Block1" parent="Blocks" unique_id=71879939 instance=ExtResource("2_qufqo")]
+
+[node name="Block2" parent="Blocks" unique_id=212122542 instance=ExtResource("2_qufqo")]
+position = Vector2(20, 0)
+number = 1
+
+[node name="Block3" parent="Blocks" unique_id=591482310 instance=ExtResource("2_qufqo")]
+position = Vector2(40, 0)
+number = 2
+
+[node name="Block4" parent="Blocks" unique_id=927240724 instance=ExtResource("2_qufqo")]
+position = Vector2(60, 0)
+number = 3

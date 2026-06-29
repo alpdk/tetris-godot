@@ -1,9 +1,19 @@
 [gd_scene format=3 uid="uid://dj6bna6qc46b"]
 
+[ext_resource type="Script" uid="uid://ctxu4jgde364a" path="res://tmp.gd" id="1_5gx2l"]
 [ext_resource type="PackedScene" uid="uid://b8ti2xssbgu34" path="res://board/board.tscn" id="2_5gx2l"]
+[ext_resource type="PackedScene" uid="uid://dh7pvrtohxxrb" path="res://figures/square/square.tscn" id="3_qohg2"]
+[ext_resource type="PackedScene" uid="uid://dy0mns205b22v" path="res://figures/line/line.tscn" id="4_vkbyq"]
 
 [node name="Level" type="Node2D" unique_id=282307337]
+script = ExtResource("1_5gx2l")
 
 [node name="Board" parent="." unique_id=1817256848 instance=ExtResource("2_5gx2l")]
-position = Vector2(509.99997, 590.00006)
+position = Vector2(494.99997, 620)
 scale = Vector2(1.25, 1.25)
+
+[node name="Square" parent="." unique_id=1231902372 instance=ExtResource("3_qohg2")]
+position = Vector2(0, 40)
+
+[node name="Line" parent="." unique_id=2000558213 instance=ExtResource("4_vkbyq")]
+position = Vector2(4, 264)

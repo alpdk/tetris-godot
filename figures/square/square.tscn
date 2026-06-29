@@ -5,6 +5,8 @@
 
 [node name="Square" type="Node2D" unique_id=1231902372]
 script = ExtResource("1_35hso")
+width = 2
+height = 2
 
 [node name="Blocks" type="Node2D" parent="." unique_id=528068787]
 
