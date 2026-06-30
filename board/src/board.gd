@@ -10,6 +10,8 @@ class_name Board
 @export var rows_count : int = 20 
 @export var cell_size : int = 20
 
+var cur_block : Figure = null
+
 var fig_spawn_grid_pos : Vector2 = Vector2(0, 0)
 var grid_shift : Vector2
 
@@ -34,7 +36,8 @@ func _ready() -> void:
 	
 	## testing, that child will be placed at correct possition
 	var new_child = square.instantiate()
-	add_child(new_child)
+	cur_block = new_child
+	add_child(cur_block)
 	
 	for i in range(rows_count):
 		var new_line : Node2D = Node2D.new()
@@ -49,8 +52,24 @@ func _ready() -> void:
 func _grid_to_pos(grid_pos : Vector2) -> Vector2:
 	return grid_shift + cell_size * grid_pos
 
+func _pos_to_grid(pos : Vector2) -> Vector2:
+	return (pos - grid_shift) / cell_size
+	#return grid_shift + cell_size * grid_pos
+
 func _on_child_entered_tree(node: Node) -> void:
 	# if Figure was added, place it at specific place
 	if node is Figure:
 		fig_spawn_grid_pos.x = fig_spawn_grid_pos.x - int(node.width / 2)
 		node.position = self._grid_to_pos(fig_spawn_grid_pos)
+
+
+func _on_down_timer_timeout() -> void:
+	# transform position to grid format
+	var grid_pos : Vector2 = self._pos_to_grid(cur_block.position)
+	
+	# move figure down by 1
+	if grid_pos.y < 0:
+		grid_pos.y += 1
+	
+	# update possition of the figure in the world
+	cur_block.position = self._grid_to_pos(grid_pos)
