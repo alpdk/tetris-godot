@@ -9,8 +9,8 @@ class_name Board
 @export var columns_count : int = 10
 @export var rows_count : int = 20 
 @export var cell_size : int = 20
-@export var fig_spawn_grid_pos : Vector2 = Vector2(0, 0)
 
+var fig_spawn_grid_pos : Vector2 = Vector2(0, 0)
 var grid_shift : Vector2
 
 func _ready() -> void:
@@ -22,6 +22,9 @@ func _ready() -> void:
 	
 	# update position of the board, to make lft bottom corner at (0, 0)
 	#board_box.position = Vector2(0, -1 * (rows_count + 1) * cell_size)
+	
+	# set spawn point at the top of the screen in grid position
+	fig_spawn_grid_pos = Vector2(round(columns_count / 2), -(rows_count + 2))
 	
 	# set width, of the line
 	board_box.width = cell_size
@@ -49,4 +52,5 @@ func _grid_to_pos(grid_pos : Vector2) -> Vector2:
 func _on_child_entered_tree(node: Node) -> void:
 	# if Figure was added, place it at specific place
 	if node is Figure:
+		fig_spawn_grid_pos.x = fig_spawn_grid_pos.x - int(node.width / 2)
 		node.position = self._grid_to_pos(fig_spawn_grid_pos)
