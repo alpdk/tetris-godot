@@ -16,10 +16,8 @@ func rotate_fig() -> void:
 	var vertical_shift : int = -max(height, width)
 	var new_pos_on_grid : Array = []
 	
-	print(width, ' ', height)
 	# center of our figure in grid format
 	var center_of_fig : Vector2 = Vector2(float(max(width, height)) / 2, -float(max(width, height)) / 2)
-	print(center_of_fig)
 	
 	# update each block position
 	for block in blocks.get_children():
@@ -38,16 +36,13 @@ func rotate_fig() -> void:
 		vertical_shift = max(vertical_shift, new_grid_pos.y)
 		new_pos_on_grid.append(new_grid_pos)
 	
-	#print(new_pos_on_grid)
-	
 	for i in range(len(blocks.get_children())):
 		blocks.get_child(i).position = Vector2(new_pos_on_grid[i].x, new_pos_on_grid[i].y - vertical_shift) * block_size
-		#print(blocks.get_child(i).position)
 	
-	# change to global method swap
-	var temp = width
+	# swap width and height
+	var tmp = width
 	width = height
-	height = temp
+	height = tmp
 
 func get_width() -> int:
 	return width
@@ -57,6 +52,5 @@ func get_height() -> int:
 
 func set_width_and_height() -> void:
 	for child in blocks.get_children():
-		#print(child.position)
 		width = max(width, int(child.position.x / block_size)  + 1)
 		height = max(height, int(- child.position.y / block_size) + 1)

@@ -10,16 +10,16 @@ height = 1
 
 [node name="Blocks" type="Node2D" parent="." unique_id=1340661712]
 
-[node name="Block1" parent="Blocks" unique_id=71879939 instance=ExtResource("2_qufqo")]
+[node name="Block0" parent="Blocks" unique_id=71879939 instance=ExtResource("2_qufqo")]
 
-[node name="Block2" parent="Blocks" unique_id=212122542 instance=ExtResource("2_qufqo")]
+[node name="Block1" parent="Blocks" unique_id=212122542 instance=ExtResource("2_qufqo")]
 position = Vector2(20, 0)
 number = 1
 
-[node name="Block3" parent="Blocks" unique_id=591482310 instance=ExtResource("2_qufqo")]
+[node name="Block2" parent="Blocks" unique_id=591482310 instance=ExtResource("2_qufqo")]
 position = Vector2(40, 0)
 number = 2
 
-[node name="Block4" parent="Blocks" unique_id=927240724 instance=ExtResource("2_qufqo")]
+[node name="Block3" parent="Blocks" unique_id=927240724 instance=ExtResource("2_qufqo")]
 position = Vector2(60, 0)
 number = 3

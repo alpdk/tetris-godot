@@ -4,6 +4,7 @@ class_name Board
 
 @onready var square : Resource = preload("res://figures/square/square.tscn")
 @onready var board_box : Line2D = $BoardBox
+@onready var lines : Node2D = $Lines
 
 @export var columns_count : int = 10
 @export var rows_count : int = 20 
@@ -31,6 +32,13 @@ func _ready() -> void:
 	## testing, that child will be placed at correct possition
 	var new_child = square.instantiate()
 	add_child(new_child)
+	
+	for i in range(rows_count):
+		var new_line : Node2D = Node2D.new()
+		new_line.name = "Line_%s" % i
+		lines.add_child(new_line)
+	
+	print(lines.get_children())
 
 #func _process(delta: float) -> void:
 	#print(position)
