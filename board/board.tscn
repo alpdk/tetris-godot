@@ -17,5 +17,9 @@ joint_mode = 2
 [node name="DownTimer" type="Timer" parent="." unique_id=1672051842]
 autostart = true
 
+[node name="SlideDelay" type="Timer" parent="." unique_id=1094402500]
+wait_time = 0.15
+one_shot = true
+
 [connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
 [connection signal="timeout" from="DownTimer" to="." method="_on_down_timer_timeout"]

@@ -54,3 +54,6 @@ func set_width_and_height() -> void:
 	for child in blocks.get_children():
 		width = max(width, int(child.position.x / block_size)  + 1)
 		height = max(height, int(- child.position.y / block_size) + 1)
+
+func get_blocks() -> Array:
+	return blocks.get_children()
