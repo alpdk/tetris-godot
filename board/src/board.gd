@@ -13,8 +13,41 @@ class_name Board
 
 var cur_figure : Figure = null
 
-var fig_spawn_grid_pos : Vector2 = Vector2(0, 0)
+var fig_spawn_grid_pos : Vector2i = Vector2i(0, 0)
 var grid_shift : Vector2
+
+var figure_list : Array[String] = []
+
+func _load_figure_scene_paths() -> void:
+	"""
+	Method for loading path to the scene related to each figure in game
+	"""
+	# load diracces for dir with figures
+	var path : String = "res://figures"
+	var fig_shared_path : DirAccess = DirAccess.open(path)
+
+	# check that dir exist
+	if fig_shared_path == null:
+		push_error("There is no such folder with figures: " + path)
+		return
+	
+	fig_shared_path.list_dir_begin()
+	
+	var name : String = fig_shared_path.get_next()
+	
+	# go over all elements inside directory
+	while name != "":
+		if name != "." and name != "..":
+			var full_path : String = "res://figures/" + name
+			
+			# load path fpr scens
+			if fig_shared_path.current_is_dir():
+				full_path += "/%s.tscn" % name
+				figure_list.append(full_path)
+			
+		name = fig_shared_path.get_next()
+	
+	fig_shared_path.list_dir_end()
 
 func _ready() -> void:
 	# setup line2D box as a board limit (for now)
@@ -27,7 +60,7 @@ func _ready() -> void:
 	#board_box.position = Vector2(0, -1 * (rows_count + 1) * cell_size)
 	
 	# set spawn point at the top of the screen in grid position
-	fig_spawn_grid_pos = Vector2(round(columns_count / 2), -(rows_count + 2))
+	fig_spawn_grid_pos = Vector2i(columns_count / 2, -rows_count + 2)
 	
 	# set width, of the line
 	board_box.width = cell_size
@@ -40,12 +73,16 @@ func _ready() -> void:
 	cur_figure = new_child
 	add_child(cur_figure)
 	
+	# create nodes for each new line
 	for i in range(rows_count):
 		var new_line : Node2D = Node2D.new()
-		new_line.name = "Line_%s" % i
+		new_line.name = "Line_%s" % int(-i)
 		lines.add_child(new_line)
 	
-	print(lines.get_children())
+	# load names of figure scenese
+	_load_figure_scene_paths()
+	
+#	print(lines.get_children())
 
 #func _process(delta: float) -> void:
 	#print(position)
@@ -60,8 +97,8 @@ func _pos_to_grid(pos : Vector2) -> Vector2:
 func _on_child_entered_tree(node: Node) -> void:
 	# if Figure was added, place it at specific place
 	if node is Figure:
-		fig_spawn_grid_pos.x = fig_spawn_grid_pos.x - int(node.width / 2)
-		node.position = self._grid_to_pos(fig_spawn_grid_pos)
+		var shifted_spawn_pos : Vector2i = Vector2i(fig_spawn_grid_pos.x - int(node.width / 2), fig_spawn_grid_pos.y)
+		node.position = self._grid_to_pos(shifted_spawn_pos)
 
 func _collect_cur_figure_blocks_pos(fig_grid_pos : Vector2) -> Dictionary: 
 	"""
@@ -103,8 +140,8 @@ func _check_below_for_obstacles(blocks_cur_pos : Dictionary) -> bool:
 			print("GROUND FLOOR!!! STOP MOVING!!!")
 			return true
 		
-		var position_below : Vector2 = Vector2(block_column, blocks_cur_pos[block_column] + 1)
-		var check_pos : String = "../Lines/Line_%s/Block_%s" % [position_below.y, block_column]
+		var position_below : Vector2i = Vector2i(block_column, blocks_cur_pos[block_column] + 1)
+		var check_pos : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [position_below.y, position_below.x])
 		
 		if has_node(check_pos):
 			print("AN OBSTACLE!!! STOP MOVING!!!")
@@ -113,7 +150,46 @@ func _check_below_for_obstacles(blocks_cur_pos : Dictionary) -> bool:
 	print("No obstacle")
 	return false
 
+func _load_new_fig():
+	"""
+	Method for loading new figure, when is was deleted
+	"""
+	var path_to_load : String = figure_list[randi_range(0, len(figure_list) - 1)]
+	var new_figure_scene: PackedScene = load(path_to_load)
+	
+	if new_figure_scene == null:
+		push_error("Failed to load scene: " + path_to_load)
+		return
+	
+	cur_figure = new_figure_scene.instantiate()
+	add_child(cur_figure)
+
+func _move_fig_blocks_to_lines(fig_grid_pos : Vector2):
+	"""
+	Move blocks of the current figure to the lines
+	
+	Argument: 
+	* fig_grid_pos (Vector2): grid position of the figure
+	"""
+	var blocks : Array[Node] = cur_figure.get_blocks()
+	
+	for block in blocks:
+		var block_pos : Vector2i = fig_grid_pos + block.position / cell_size
+		
+		# THERE IS A BUG!!! TRY TO FIX IT!!!
+		var target_line : Node = get_node("./Lines/Line_%s" % block_pos.y)
+		block.name = "Block_%s" % block_pos.x
+		
+		block.reparent(target_line)
+#		var node_path : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [block_pos.y, block_pos.x])
+	cur_figure.queue_free()
+	
+	_load_new_fig()
+
 func _on_down_timer_timeout() -> void:
+	if cur_figure == null:
+		return
+	
 	# transform position to grid format
 	var fig_grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
 	
@@ -123,7 +199,7 @@ func _on_down_timer_timeout() -> void:
 	if self._check_below_for_obstacles(blocks_cur_pos):
 #		cur_figure.queue_free()
 #		There should be code, that will move blocks, into lines
-		pass
+		self._move_fig_blocks_to_lines(fig_grid_pos)
 	else:
 		# move figure down by 1
 		if fig_grid_pos.y < 0:
