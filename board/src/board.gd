@@ -18,6 +18,12 @@ var grid_shift : Vector2
 
 var figure_list : Array[String] = []
 
+func _grid_to_pos(grid_pos : Vector2) -> Vector2:
+	return grid_shift + cell_size * grid_pos * Vector2(1, -1)
+
+func _pos_to_grid(pos : Vector2) -> Vector2:
+	return ((pos - grid_shift) / cell_size) * Vector2(1, -1)
+
 func _load_figure_scene_paths() -> void:
 	"""
 	Method for loading path to the scene related to each figure in game
@@ -33,19 +39,19 @@ func _load_figure_scene_paths() -> void:
 	
 	fig_shared_path.list_dir_begin()
 	
-	var name : String = fig_shared_path.get_next()
+	var fig_name : String = fig_shared_path.get_next()
 	
 	# go over all elements inside directory
-	while name != "":
-		if name != "." and name != "..":
-			var full_path : String = "res://figures/" + name
+	while fig_name != "":
+		if fig_name != "." and fig_name != "..":
+			var full_path : String = "res://figures/" + fig_name
 			
 			# load path fpr scens
 			if fig_shared_path.current_is_dir():
-				full_path += "/%s.tscn" % name
+				full_path += "/%s.tscn" % fig_name
 				figure_list.append(full_path)
 			
-		name = fig_shared_path.get_next()
+		fig_name = fig_shared_path.get_next()
 	
 	fig_shared_path.list_dir_end()
 
@@ -54,8 +60,14 @@ func _fix_fig_pos():
 	Method for fixing position of the figure after rotation
 	"""
 	print("POSITION FIXED")
-	cur_figure.position
-	pass
+	
+	var fig_grid_pos = _pos_to_grid(cur_figure.position)
+	var fig_width = cur_figure.get_width()
+	
+	if fig_grid_pos.x + fig_width > columns_count:
+		fig_grid_pos.x = columns_count - (fig_width)
+		
+	cur_figure.position = _grid_to_pos(fig_grid_pos)
 
 func _load_new_fig():
 	"""
@@ -93,13 +105,6 @@ func _ready() -> void:
 	
 	# load first figure
 	_load_new_fig()
-
-func _grid_to_pos(grid_pos : Vector2) -> Vector2:
-	return grid_shift + cell_size * grid_pos * Vector2(1, -1)
-
-func _pos_to_grid(pos : Vector2) -> Vector2:
-	return ((pos - grid_shift) / cell_size) * Vector2(1, -1)
-	#return grid_shift + cell_size * grid_pos
 
 func _on_child_entered_tree(node: Node) -> void:
 	# if Figure was added, place it at specific place
