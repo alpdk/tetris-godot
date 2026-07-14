@@ -54,6 +54,7 @@ func _fix_fig_pos():
 	Method for fixing position of the figure after rotation
 	"""
 	print("POSITION FIXED")
+	cur_figure.position
 	pass
 
 func _load_new_fig():
@@ -73,7 +74,7 @@ func _load_new_fig():
 
 func _ready() -> void:
 	# set spawn point at the top of the screen in grid position
-	fig_spawn_grid_pos = Vector2i(columns_count / 2, -(rows_count + 2))
+	fig_spawn_grid_pos = Vector2i(columns_count / 2, rows_count + 2)
 	
 	# set width, of the line
 	board_box.width = cell_size
@@ -94,10 +95,10 @@ func _ready() -> void:
 	_load_new_fig()
 
 func _grid_to_pos(grid_pos : Vector2) -> Vector2:
-	return grid_shift + cell_size * grid_pos
+	return grid_shift + cell_size * grid_pos * Vector2(1, -1)
 
 func _pos_to_grid(pos : Vector2) -> Vector2:
-	return (pos - grid_shift) / cell_size
+	return ((pos - grid_shift) / cell_size) * Vector2(1, -1)
 	#return grid_shift + cell_size * grid_pos
 
 func _on_child_entered_tree(node: Node) -> void:
@@ -184,6 +185,7 @@ func _on_down_timer_timeout() -> void:
 	
 	# transform position to grid format
 	var fig_grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
+#	print(fig_grid_pos)
 	
 #	# dictionary of cells, below which we need to chek, that no obstacels
 #	var blocks_cur_pos : Dictionary = self._collect_cur_figure_blocks_pos(fig_grid_pos)
@@ -194,13 +196,15 @@ func _on_down_timer_timeout() -> void:
 		pass
 	else:
 		# move figure down by 1
-		if fig_grid_pos.y < 0:
-			fig_grid_pos.y += 1
+		print(fig_grid_pos)
+		if fig_grid_pos.y > 0:
+			fig_grid_pos.y -= 1
 		
 		# update possition of the figure in the world
 		cur_figure.position = self._grid_to_pos(fig_grid_pos)
 
 func _process(_delta: float) -> void:
+#	print(cur_figure.position)
 	if Input.is_action_pressed("slide_left") and cur_figure != null and slide_delay.is_stopped():
 		var grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
 		cur_figure.position = self._grid_to_pos(Vector2(max(grid_pos.x - 1, 0), grid_pos.y))
