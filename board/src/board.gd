@@ -18,6 +18,9 @@ var grid_shift : Vector2
 
 var figure_list : Array[String] = []
 
+var blocks_board : Array = []
+var binary_board : Array = []
+
 func _grid_to_pos(grid_pos : Vector2) -> Vector2:
 	return grid_shift + cell_size * grid_pos * Vector2(1, -1)
 
@@ -59,8 +62,6 @@ func _fix_fig_pos():
 	"""
 	Method for fixing position of the figure after rotation
 	"""
-	print("POSITION FIXED")
-	
 	var fig_grid_pos = _pos_to_grid(cur_figure.position)
 	var fig_width = cur_figure.get_width()
 	
@@ -99,6 +100,21 @@ func _ready() -> void:
 		var new_line : Node2D = Node2D.new()
 		new_line.name = "Line_%s" % int(-i)
 		lines.add_child(new_line)
+	
+	# fill blocks_board and binary_board
+	
+	var block : PackedScene = load("res://block/block.tscn")
+	
+	for row_ind in range(rows_count):
+		var blocks_row : Array[Node2D] = []
+		var binary_row : Array[int] = []
+		
+		for col_ind in range(columns_count):
+			blocks_row.append(block.instantiate())
+			binary_row.append(0)
+		
+		blocks_board.append(blocks_row)
+		binary_row.append(binary_row)
 	
 	# load names of figure scenese
 	_load_figure_scene_paths()
