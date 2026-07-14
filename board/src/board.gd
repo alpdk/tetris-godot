@@ -49,29 +49,29 @@ func _load_figure_scene_paths() -> void:
 	
 	fig_shared_path.list_dir_end()
 
+func _load_new_fig():
+	"""
+	Method for loading new figure, when is was deleted
+	"""
+	var path_to_load : String = figure_list[randi_range(0, len(figure_list) - 1)]
+	var new_figure_scene: PackedScene = load(path_to_load)
+	
+	if new_figure_scene == null:
+		push_error("Failed to load scene: " + path_to_load)
+		return
+	
+	cur_figure = new_figure_scene.instantiate()
+	add_child(cur_figure)
+
 func _ready() -> void:
-	# setup line2D box as a board limit (for now)
-	#for i in len(board_box.points):
-		#var point_rel_pos : Vector2 = Vector2(sign(board_box.points[i].x), sign(board_box.points[i].y))
-		#board_box.set_point_position(i, point_rel_pos * Vector2(columns_count + 1, rows_count + 1) * cell_size)
-		#print(board_box.points[i])
-	
-	# update position of the board, to make lft bottom corner at (0, 0)
-	#board_box.position = Vector2(0, -1 * (rows_count + 1) * cell_size)
-	
 	# set spawn point at the top of the screen in grid position
-	fig_spawn_grid_pos = Vector2i(columns_count / 2, -rows_count + 2)
+	fig_spawn_grid_pos = Vector2i(columns_count / 2, -(rows_count + 2))
 	
 	# set width, of the line
 	board_box.width = cell_size
 	
 	# set grid shift
 	grid_shift = Vector2(board_box.width / 2, -board_box.width / 2)
-	
-	## testing, that child will be placed at correct possition
-	var new_child = square.instantiate()
-	cur_figure = new_child
-	add_child(cur_figure)
 	
 	# create nodes for each new line
 	for i in range(rows_count):
@@ -82,10 +82,8 @@ func _ready() -> void:
 	# load names of figure scenese
 	_load_figure_scene_paths()
 	
-#	print(lines.get_children())
-
-#func _process(delta: float) -> void:
-	#print(position)
+	# load first figure
+	_load_new_fig()
 
 func _grid_to_pos(grid_pos : Vector2) -> Vector2:
 	return grid_shift + cell_size * grid_pos
@@ -150,20 +148,6 @@ func _check_below_for_obstacles(blocks_cur_pos : Dictionary) -> bool:
 	print("No obstacle")
 	return false
 
-func _load_new_fig():
-	"""
-	Method for loading new figure, when is was deleted
-	"""
-	var path_to_load : String = figure_list[randi_range(0, len(figure_list) - 1)]
-	var new_figure_scene: PackedScene = load(path_to_load)
-	
-	if new_figure_scene == null:
-		push_error("Failed to load scene: " + path_to_load)
-		return
-	
-	cur_figure = new_figure_scene.instantiate()
-	add_child(cur_figure)
-
 func _move_fig_blocks_to_lines(fig_grid_pos : Vector2):
 	"""
 	Move blocks of the current figure to the lines
@@ -217,6 +201,8 @@ func _process(_delta: float) -> void:
 		var grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
 		cur_figure.position = self._grid_to_pos(Vector2(min(grid_pos.x + 1, columns_count - cur_figure.get_width()), grid_pos.y))
 		slide_delay.start()
+	elif Input.is_action_just_pressed("rotate_fig"):
+		cur_figure.rotate_fig()
 
 #func _input(event: InputEvent) -> void:
 	#if event.is_action("slide_left") and cur_figure != null:
