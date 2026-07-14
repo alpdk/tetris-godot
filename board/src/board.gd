@@ -49,6 +49,13 @@ func _load_figure_scene_paths() -> void:
 	
 	fig_shared_path.list_dir_end()
 
+func _fix_fig_pos():
+	"""
+	Method for fixing position of the figure after rotation
+	"""
+	print("POSITION FIXED")
+	pass
+
 func _load_new_fig():
 	"""
 	Method for loading new figure, when is was deleted
@@ -61,6 +68,7 @@ func _load_new_fig():
 		return
 	
 	cur_figure = new_figure_scene.instantiate()
+	cur_figure.fig_rotated.connect(_fix_fig_pos)
 	add_child(cur_figure)
 
 func _ready() -> void:
@@ -98,77 +106,77 @@ func _on_child_entered_tree(node: Node) -> void:
 		var shifted_spawn_pos : Vector2i = Vector2i(fig_spawn_grid_pos.x - int(node.width / 2), fig_spawn_grid_pos.y)
 		node.position = self._grid_to_pos(shifted_spawn_pos)
 
-func _collect_cur_figure_blocks_pos(fig_grid_pos : Vector2) -> Dictionary: 
-	"""
-	Method for collecting new figure blocks possition on the greed, which are require check, before move down
-	
-	Argument: 
-		* fig_grid_pos (Vector2): grid position of the figure
-	
-	Returns:
-		* Dictionary: dictionary of cells, below which we need to chek, that no obstacels
-	"""
-	var cur_dinemic_blocks : Array[Node] = cur_figure.get_blocks()
-	var blocks_pos_dict : Dictionary = {}
-	
-	for block in cur_dinemic_blocks:
-		# taking position of the block in grid format
-		var block_pos : Vector2 = fig_grid_pos + block.position / cell_size
-		
-		# add or update block position in dictionary, that will require check
-		if (block_pos.x not in blocks_pos_dict) or (block_pos.y > blocks_pos_dict[block_pos.x]):
-			blocks_pos_dict[block_pos.x] = block_pos.y
-	
-	return blocks_pos_dict 
+#func _collect_cur_figure_blocks_pos(fig_grid_pos : Vector2) -> Dictionary: 
+#	"""
+#	Method for collecting new figure blocks possition on the greed, which are require check, before move down
+#	
+#	Argument: 
+#		* fig_grid_pos (Vector2): grid position of the figure
+#	
+#	Returns:
+#		* Dictionary: dictionary of cells, below which we need to chek, that no obstacels
+#	"""
+#	var cur_dinemic_blocks : Array[Node] = cur_figure.get_blocks()
+#	var blocks_pos_dict : Dictionary = {}
+#	
+#	for block in cur_dinemic_blocks:
+#		# taking position of the block in grid format
+#		var block_pos : Vector2 = fig_grid_pos + block.position / cell_size
+#		
+#		# add or update block position in dictionary, that will require check
+#		if (block_pos.x not in blocks_pos_dict) or (block_pos.y > blocks_pos_dict[block_pos.x]):
+#			blocks_pos_dict[block_pos.x] = block_pos.y
+#	
+#	return blocks_pos_dict 
 
-func _check_below_for_obstacles(blocks_cur_pos : Dictionary) -> bool:
-	"""
-	Check, if there is any obstacel, below the figure
-	
-	Argument: 
-		* blocks_cur_pos (Dictionary): dictionary of cells, below which we need to check, that no obstacels
-	
-	Returns:
-		* bool: true, if there is any obstacel (any other block, or the base, of the board), 
-				below the figure, otherwise false
-	"""
-	# for each block in the figure, check if there is any block below
-	for block_column in blocks_cur_pos.keys():
-		if blocks_cur_pos[block_column] == 0:
-			print("GROUND FLOOR!!! STOP MOVING!!!")
-			return true
-		
-		var position_below : Vector2i = Vector2i(block_column, blocks_cur_pos[block_column] + 1)
-		var check_pos : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [position_below.y, position_below.x])
-		
-		if has_node(check_pos):
-			print("AN OBSTACLE!!! STOP MOVING!!!")
-			return true
-	
-	print("No obstacle")
-	return false
+#func _check_below_for_obstacles(blocks_cur_pos : Dictionary) -> bool:
+#	"""
+#	Check, if there is any obstacel, below the figure
+#	
+#	Argument: 
+#		* blocks_cur_pos (Dictionary): dictionary of cells, below which we need to check, that no obstacels
+#	
+#	Returns:
+#		* bool: true, if there is any obstacel (any other block, or the base, of the board), 
+#				below the figure, otherwise false
+#	"""
+#	# for each block in the figure, check if there is any block below
+#	for block_column in blocks_cur_pos.keys():
+#		if blocks_cur_pos[block_column] == 0:
+#			print("GROUND FLOOR!!! STOP MOVING!!!")
+#			return true
+#		
+#		var position_below : Vector2i = Vector2i(block_column, blocks_cur_pos[block_column] + 1)
+#		var check_pos : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [position_below.y, position_below.x])
+#		
+#		if has_node(check_pos):
+#			print("AN OBSTACLE!!! STOP MOVING!!!")
+#			return true
+#	
+#	print("No obstacle")
+#	return false
 
-func _move_fig_blocks_to_lines(fig_grid_pos : Vector2):
-	"""
-	Move blocks of the current figure to the lines
-	
-	Argument: 
-	* fig_grid_pos (Vector2): grid position of the figure
-	"""
-	var blocks : Array[Node] = cur_figure.get_blocks()
-	
-	for block in blocks:
-		var block_pos : Vector2i = fig_grid_pos + block.position / cell_size
-		
-		# THERE IS A BUG!!! TRY TO FIX IT!!!
-		var target_line : Node = get_node("./Lines/Line_%s" % block_pos.y)
-		block.name = "Block_%s" % block_pos.x
-		
-		block.reparent(target_line)
-#		var node_path : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [block_pos.y, block_pos.x])
-	cur_figure.queue_free()
-	
-	_load_new_fig()
+#func _move_fig_blocks_to_lines(fig_grid_pos : Vector2):
+#	"""
+#	Move blocks of the current figure to the lines
+#	
+#	Argument: 
+#	* fig_grid_pos (Vector2): grid position of the figure
+#	"""
+#	var blocks : Array[Node] = cur_figure.get_blocks()
+#	
+#	for block in blocks:
+#		var block_pos : Vector2i = fig_grid_pos + block.position / cell_size
+#		
+#		# THERE IS A BUG!!! TRY TO FIX IT!!!
+#		var target_line : Node = get_node("./Lines/Line_%s" % block_pos.y)
+#		block.name = "Block_%s" % block_pos.x
+#		
+#		block.reparent(target_line)
+##		var node_path : NodePath = NodePath("./Lines/Line_%s/Block_%s" % [block_pos.y, block_pos.x])
+#	cur_figure.queue_free()
+#	
+#	_load_new_fig()
 
 func _on_down_timer_timeout() -> void:
 	if cur_figure == null:
@@ -177,13 +185,13 @@ func _on_down_timer_timeout() -> void:
 	# transform position to grid format
 	var fig_grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
 	
-	# dictionary of cells, below which we need to chek, that no obstacels
-	var blocks_cur_pos : Dictionary = self._collect_cur_figure_blocks_pos(fig_grid_pos)
+#	# dictionary of cells, below which we need to chek, that no obstacels
+#	var blocks_cur_pos : Dictionary = self._collect_cur_figure_blocks_pos(fig_grid_pos)
 	
-	if self._check_below_for_obstacles(blocks_cur_pos):
+	if false:
 #		cur_figure.queue_free()
 #		There should be code, that will move blocks, into lines
-		self._move_fig_blocks_to_lines(fig_grid_pos)
+		pass
 	else:
 		# move figure down by 1
 		if fig_grid_pos.y < 0:

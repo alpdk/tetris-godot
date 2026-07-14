@@ -2,12 +2,14 @@
 class_name Figure
 extends Node2D
 
+signal fig_rotated
+
 @export var width : int = 0
 @export var height : int = 0
 
-var block_size : int = 20
-
 @onready var blocks : Node2D = $Blocks
+
+var block_size : int = 20
 
 func _ready() -> void:
 	set_width_and_height()
@@ -43,6 +45,8 @@ func rotate_fig() -> void:
 	var tmp = width
 	width = height
 	height = tmp
+	
+	fig_rotated.emit()
 
 func get_width() -> int:
 	return width
