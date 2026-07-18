@@ -217,12 +217,20 @@ func _can_slide_fig_down(fig_grid_pos : Vector2) -> bool:
 		* fig_grid_pos (Vector2) : grid position of the current figure
 
 	Returns:
-		* bool: true, if there is no obstacles 
-				false, if there is obstacles
+		* bool: true, if there are no obstacles 
+				false, if there are obstacles
 	"""
-	print(fig_grid_pos)
 	if fig_grid_pos.y == 0:
 		return false
+	
+	for block in cur_figure.get_blocks():
+		var block_grid_pos : Vector2i = self._pos_to_grid(cur_figure.position + block.position)
+		
+		if block_grid_pos.y > 20:
+			continue
+		
+		if binary_board[block_grid_pos.y - 1][block_grid_pos.x] == 1:
+			return false
 	
 	return true
 
@@ -237,6 +245,10 @@ func _update_game_boards(fig_grid_pos : Vector2):
 	
 	for block in fig_blocks:
 		var block_grid_pos : Vector2i = self._pos_to_grid(cur_figure.position + block.position)
+		
+		if block_grid_pos.y >= 20:
+			push_error("GAME OVER!!!")
+			return
 		
 		binary_board[block_grid_pos.y][block_grid_pos.x] = 1
 		blocks_board[block_grid_pos.y][block_grid_pos.x].visible = true
