@@ -8,7 +8,7 @@ class_name Board
 @onready var slide_delay : Timer = $SlideDelay
 
 @export var columns_count : int = 10
-@export var rows_count : int = 20 
+@export var rows_count : int = 20
 @export var cell_size : int = 20
 
 var cur_figure : Figure = null
@@ -98,7 +98,7 @@ func _ready() -> void:
 	# create nodes for each new line
 	for i in range(rows_count):
 		var new_line : Node2D = Node2D.new()
-		new_line.name = "Line_%s" % int(-i)
+		new_line.name = "Line_%s" % int(i)
 		lines.add_child(new_line)
 	
 	# fill blocks_board and binary_board
@@ -106,15 +106,24 @@ func _ready() -> void:
 	var block : PackedScene = load("res://block/block.tscn")
 	
 	for row_ind in range(rows_count):
-		var blocks_row : Array[Node2D] = []
+		var blocks_row : Array[Block] = []
 		var binary_row : Array[int] = []
 		
 		for col_ind in range(columns_count):
-			blocks_row.append(block.instantiate())
+			var new_block : Block = block.instantiate()
+			new_block.position = self._grid_to_pos(Vector2(col_ind, row_ind))
+			new_block.visible = false
+			
+			var target_line : Node = get_node("./Lines/Line_%s" % col_ind)
+			new_block.name = "Block_%s" % row_ind
+			
+			target_line.add_child(new_block)
+			
+			blocks_row.append(new_block)
 			binary_row.append(0)
 		
 		blocks_board.append(blocks_row)
-		binary_row.append(binary_row)
+		binary_board.append(binary_row)
 	
 	# load names of figure scenese
 	_load_figure_scene_paths()
@@ -125,7 +134,7 @@ func _ready() -> void:
 func _on_child_entered_tree(node: Node) -> void:
 	# if Figure was added, place it at specific place
 	if node is Figure:
-		var shifted_spawn_pos : Vector2i = Vector2i(fig_spawn_grid_pos.x - int(node.width / 2), fig_spawn_grid_pos.y)
+		var shifted_spawn_pos : Vector2 = Vector2(fig_spawn_grid_pos.x - int(node.width / 2), fig_spawn_grid_pos.y)
 		node.position = self._grid_to_pos(shifted_spawn_pos)
 
 #func _collect_cur_figure_blocks_pos(fig_grid_pos : Vector2) -> Dictionary: 
@@ -200,22 +209,48 @@ func _on_child_entered_tree(node: Node) -> void:
 #	
 #	_load_new_fig()
 
+func _can_slide_fig_down(fig_grid_pos : Vector2) -> bool:
+	"""
+	Check, if we can slide current figure down
+	
+	Argumetns:
+		* fig_grid_pos (Vector2) : grid position of the current figure
+
+	Returns:
+		* bool: true, if there is no obstacles 
+				false, if there is obstacles
+	"""
+	print(fig_grid_pos)
+	if fig_grid_pos.y == 0:
+		return false
+	
+	return true
+
+func _update_game_boards(fig_grid_pos : Vector2):
+	"""
+	Update game boards because figure stoped moving
+	
+	Argumetns:
+		* fig_grid_pos (Vector2) : grid position of the current figure
+	"""
+	var fig_blocks : Array = cur_figure.get_blocks()
+	
+	for block in fig_blocks:
+		var block_grid_pos : Vector2i = self._pos_to_grid(cur_figure.position + block.position)
+		
+		binary_board[block_grid_pos.y][block_grid_pos.x] = 1
+		blocks_board[block_grid_pos.y][block_grid_pos.x].visible = true
+		
+
 func _on_down_timer_timeout() -> void:
 	if cur_figure == null:
 		return
 	
 	# transform position to grid format
 	var fig_grid_pos : Vector2 = self._pos_to_grid(cur_figure.position)
-#	print(fig_grid_pos)
 	
-#	# dictionary of cells, below which we need to chek, that no obstacels
-#	var blocks_cur_pos : Dictionary = self._collect_cur_figure_blocks_pos(fig_grid_pos)
-	
-	if false:
-#		cur_figure.queue_free()
-#		There should be code, that will move blocks, into lines
-		pass
-	else:
+	# check if figure can be moved down
+	if self._can_slide_fig_down(fig_grid_pos):
 		# move figure down by 1
 		print(fig_grid_pos)
 		if fig_grid_pos.y > 0:
@@ -223,6 +258,11 @@ func _on_down_timer_timeout() -> void:
 		
 		# update possition of the figure in the world
 		cur_figure.position = self._grid_to_pos(fig_grid_pos)
+	else:
+		# update tables of the board and load new figure
+		self._update_game_boards(fig_grid_pos)
+		cur_figure.queue_free()
+		_load_new_fig()
 
 func _process(_delta: float) -> void:
 #	print(cur_figure.position)
